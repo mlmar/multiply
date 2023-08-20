@@ -1,166 +1,224 @@
-'use strict';
+import { buildMenuLabels } from './js/Menu.js';
+import Timer, { buildTimerLabels } from './js/Timer.js';
+import { buildOutputLabels } from './js/Output.js';
+import { buildKeypad } from './js/Keypad.js';
+import { shareText } from './js/ShareUtil.js';
+
+import Constants from './js/Constants.js';
 
 $(document).ready(init);
-
-const CLEAR_CODE = '&#10005;';
-const ENTER_CODE = '&#10132;';
-
 let state = {
   inProgress: false,
-  min: 0,
+  time: 0,
+  currentQuestions: 0,
+  totalQuestions: 1,
+
+  min: 1,
   max: 9,
   
+  val0: 0,
   val1: 0,
   val2: 0,
-  val3: 0
 }
 
+let timer = null;
 let $main = null;
+let $footer = null;
 
+// Initialzie UI and event handlers
 function init() {
-  $main = $('#main');
+  $main = $('main');
+  $footer = $('footer');
 
-  $main.$menuLabels = buildMenulabels();
+  // Menu
+  $main.$menuLabels = buildMenuLabels(state.min, state.max);
   $main.append($main.$menuLabels);
   $main.$menuLabels.find('label').on('click', handleMenuLabelClick);
 
+  // Timer
+  $main.$timerLabels = buildTimerLabels();
+  $main.append($main.$timerLabels);
+  $main.$timerLabels.hide();
+  timer = new Timer();
+
+  // Output
   $main.$outputLabels = buildOutputLabels();
   $main.append($main.$outputLabels);
   $main.$outputLabels.hide();
 
+  // Keypad
   $main.$keypad = buildKeypad();
-  $main.$keypad.find('.keypad-btn').on('click', handleKeypadClick);
+  $main.$keypad.$clear = $(`<button class="bw-btn inverted keypad-btn" data-value="${Constants.CLEAR}"> ${Constants.CLEAR_CODE} </button>`);
+  $main.$keypad.$enter = $(`<button class="bw-btn inverted keypad-btn" data-value="${Constants.ENTER}"> ${Constants.ENTER_CODE} </button>`);
+  $main.$keypad.children().last().prepend($main.$keypad.$clear);
+  $main.$keypad.children().last().append($main.$keypad.$enter);
+  $main.$keypad.find('.keypad-btn').on('touchstart mouseup', handleKeypadClick);
+  $main.$keypad.find('.keypad-btn').on('touchend', e => e.preventDefault());
+  $(document).on('keydown', handleKeypadClick);
   $main.append($main.$keypad);
-  
-  $main.$start = $(`<button class="flex flex-middle bw-btn start-btn"> START </button>`);
-  $main.$start.on('click', start);
-  $main.append($main.$start);
+
+  // Share button
+  $main.$shareBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted share-btn"> ${Constants.SHARE_CODE} </button>`)
+  $main.append($main.$shareBtn);
+  $main.$shareBtn.on('click', handleShareClick);
+  $main.$shareBtn.addClass(Constants.INVISIBLE);
 }
-
-/*** BEGIN UI ***/
-
-// MIN MAX LABELS
-function buildMenulabel(label, value) {
-  return $(`
-    <div class="flex flex-fill flex-middle flex-center float-span-text">
-      <span> ${label.toUpperCase()} </span>
-      <label class="flex flex-middle flex-center" data-state="${label}"> ${value} </label>
-    </div>
-  `);
-}
-
-function buildMenulabels() {
-  const $container = $(`<section class="flex-col menu-labels"></section>`);
-  let $minContainer = buildMenulabel('min', state.min);
-  let $maxContainer = buildMenulabel('max', state.max);
-  $container.$min = $minContainer.find('label');
-  $container.$max = $maxContainer.find('label');
-  $container.append($minContainer);
-  $container.append($maxContainer);
-  return $container;
-}
-
-function buildOutputLabels() {
-  const $container = $(`<section class="flex flex-center output-labels"></section>`);
-  $container.$m1 = $(`<label class="flex flex-middle"> </label>`);
-  $container.$m2 = $(`<label class="flex flex-middle"> </label>`);
-  $container.$m3 = $(`<label class="flex flex-middle" data-state="val3"> </label>`);
-
-  $container.append($container.$m1)
-  $container.append(`<span class="flex flex-middle"> ${CLEAR_CODE} </span>`)
-  $container.append($container.$m2)
-  $container.append(`<span class="flex flex-middle"> = </span>`)
-  $container.append($container.$m3)
-  return $container;
-}
-
-// KEYPAD BUTTONS
-function buildKeypadRow(...numbers) {
-  return $(`
-    <section class="flex">
-      ${numbers.map((n, i) => `<button class="bw-btn keypad-btn" data-value="${n}" data-index="${i}"> ${n} </button>`).join('\n')}
-    </section>
-  `);
-}
-
-function buildKeypad() {
-  const $container = $(`<article class="flex-col flex-center flex-middle keypad"></article>`);
-  $container.append(buildKeypadRow(7, 8, 9));
-  $container.append(buildKeypadRow(4, 5, 6));
-  $container.append(buildKeypadRow(1, 2, 3));
-  $container.append(buildKeypadRow(CLEAR_CODE, 0, ENTER_CODE));
-  return $container;
-}
-
-/*** END UI ***/
-
 
 /*** BEGIN HANDLERS ***/
 
 function handleMenuLabelClick(event) {
   $main.$focused = $(event.currentTarget);
   refreshDisplay();
+  state[$main.$focused.data('state')] = 0;
 }
 
-function start() {
-  state.inProgress = true;
-  $main.$focused = $main.$outputLabels.$m3;
+function handleKeypadClick(event) {
+  let $el = $main.$focused;
+
+  let $target = $(event.target);
+
+  if(event.touches?.length) { // handle multiple touch events
+    let touch = [];
+    for(let t of event.touches) {
+      if(t) touch.push(t);
+    }
+    touch = touch[touch.length - 1];
+    $target = $(touch.target)
+  }
+
+  let value = $target?.data('value');
+  let num = parseInt(value);
+  let prop = $el?.data('state');
+  let key = event.key?.toUpperCase();
+
+  if(key) {
+    value = key;
+    num = parseInt(key);
+  }
+
+  pressValue(value, num, prop);
+}
+
+function pressValue(value, num, prop) {
+  if(isNaN(num)) {
+    if(value === Constants.CLEAR) {
+      state[prop] = null;
+    } else if(value === Constants.BACKSPACE) {
+      state[prop] = Math.floor(state[prop] / 10);
+    } else if(state.inProgress && value === Constants.ENTER) {
+      verifyEquation();
+    } else if(value === Constants.ENTER) {
+      start();
+    }
+  } else {
+    value = (state[prop] || 0) + '' + num;
+    state[prop] = parseInt(value);
+  }
   refreshDisplay();
+}
+
+function handleShareClick() {
+  shareText(`Can you beat ${state.time} seconds?`);
+}
+
+/** BEGIN LOGIC ***/
+
+function start() {
+  if(state.time) {
+    state.time = 0;
+    refreshDisplay();
+  } else {
+    state.inProgress = true;
+    state.time = 0;
+    state.currentQuestions = 0;
+    $main.$focused = $main.$outputLabels.$m3;
+    generateRandomEquation();
+    timer.start(update);
+  }
 }
 
 function end() {
   state.inProgress = false;
   $main.$focused = null;
-  refreshDisplay();
+  timer.stop();
 }
 
-function handleKeypadClick(event) {
-  let $el = $main.$focused;
-  if(!$el) {
-    return;
+function update(time) {
+  if(state.inProgress) {
+    state.time = time;
+    refreshDisplay();
+  } else {
+    end();
   }
+}
 
-  let $target = $(event.target);
-  let value = $target.data('value');
-  let colIndex = $target.data('index');
-  let num = parseInt(value);
-  let prop = $el.data('state');
-
-  if(isNaN(num)) {
-    if(colIndex === 0) {
-      state[prop] = 0;
+function verifyEquation() {
+  if(state.val0 * state.val1 === state.val2) {
+    if(++state.currentQuestions < state.totalQuestions) {
+      generateRandomEquation();
     } else {
-      
+      state.inProgress = false;
     }
   } else {
-    let val = parseInt($el.text() + num);
-    state[prop] = val;
+    state.inProgress = false;
   }
-
-  refreshDisplay();
 }
+
+function generateRandomEquation() {
+  state.val0 = random(state.min, state.max);
+  state.val1 = random(state.min, state.max);
+  state.val2 = null;
+}
+
+function random(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+/*** END LOGIC ***/
 
 /*** END HANDLERS ***/
 
 function refreshDisplay() {
-  if(state.inProgress) {
-    $main.$start.hide();
+  if(state.time) { // Hide menu if timer exists
     $main.$menuLabels.hide();
+    $main.$timerLabels.show();
     $main.$outputLabels.show();
+    $main.$shareBtn.addClass(Constants.INVISIBLE);
   } else {
-    $main.$start.show();
     $main.$menuLabels.show();
+    $main.$timerLabels.hide();
     $main.$outputLabels.hide();
+  }
+  
+  $footer.toggleClass(Constants.INVISIBLE, state.inProgress);
+
+  let $labels = [
+    $main.$timerLabels,
+    $main.$outputLabels
+  ];
+
+  if(!state.inProgress && state.time) { // Change text and UI colors if user fails or succeeds
+    $main.$keypad.$enter.html(Constants.BACK_CODE);
+    let isSuccess = state.currentQuestions >= state.totalQuestions;
+    $labels.forEach(l => l.toggleClass(Constants.STATUS_SUCCESS, isSuccess));
+    $labels.forEach(l => l.toggleClass(Constants.STATUS_FAIL, !isSuccess));
+    $main.$shareBtn.toggleClass(Constants.INVISIBLE, !isSuccess);
+  } else {
+    $main.$keypad.$enter.html(Constants.ENTER_CODE);
+    $labels.forEach(l => l.removeClass(Constants.STATUS_SUCCESS));
+    $labels.forEach(l => l.removeClass(Constants.STATUS_FAIL));
   }
 
   if($main.$focused) {
-    $main.find('.focused').removeClass('focused');
-    $main.$focused.addClass('focused');
+    $main.find('.' + Constants.FOCUSED).removeClass(Constants.FOCUSED);
+    $main.$focused.addClass(Constants.FOCUSED);
   }
 
+  // Refresh text
+  $main.$timerLabels.text(state.time + 's');
   $main.$menuLabels.$min.text(state.min);
   $main.$menuLabels.$max.text(state.max);
-  $main.$outputLabels.$m1.text(state.val1);
-  $main.$outputLabels.$m2.text(state.val2);
-  $main.$outputLabels.$m3.text(state.val3);
+  $main.$outputLabels.$m1.text(state.val0);
+  $main.$outputLabels.$m2.text(state.val1);
+  $main.$outputLabels.$m3.text(state.val2);
 }

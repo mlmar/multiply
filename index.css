@@ -19,6 +19,7 @@ html, body {
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 
 /* FLEX */
@@ -65,12 +66,16 @@ footer > a {
   position: relative;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 /* SPECIFIC STYLES */
 
 .menu-labels > *,
 .output-labels > * {
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
 }
 
 .menu-labels label, 
@@ -82,7 +87,7 @@ footer > a {
 }
 
 .menu-labels span {
-  font-size: 3rem;
+  font-size: 2.5rem;
   text-decoration: none;
   padding-right: 5vw;
   border-bottom: none;
@@ -91,6 +96,16 @@ footer > a {
 .menu-labels label.focused {
   color: var(--green);
   border-color: var(--green);
+}
+
+.timer-labels {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.timer-labels,
+.output-labels {
+  pointer-events: none;
 }
 
 .output-labels span {
@@ -105,6 +120,7 @@ footer > a {
   background: white;
   border: .2rem solid black;
   margin: .15rem;
+  color: black;
 }
 
 .bw-btn:active {
@@ -112,12 +128,32 @@ footer > a {
   color: white;
 }
 
+.bw-btn.inverted {
+  background: black;
+  color: white;
+}
+
+.bw-btn.inverted:active {
+  background: white;
+  color: black;
+}
+
 .keypad .keypad-btn {
   width: 5rem;
   height: 5rem;
 }
 
-.start-btn {
+.share-btn {
   padding: 1rem 0;
-  width: 15.6rem;
+  width: 5rem;
+  height: 5rem;
+  font-size: 2rem;
+}
+
+.status-success {
+  color: var(--green);
+}
+
+.status-fail {
+  color: red;
 }
