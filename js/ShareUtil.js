@@ -10,7 +10,7 @@ export const shareText = async function(text) {
       try {
         await navigator.share(shareData)
       } catch (err) {
-        alert('Sharing not supported for this device.');
+        console.warn('Sharing not supported for this device.');
       }
     }
   } else if(navigator.clipboard) {

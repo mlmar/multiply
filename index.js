@@ -11,7 +11,7 @@ let state = {
   inProgress: false,
   time: 0,
   currentQuestions: 0,
-  totalQuestions: 1,
+  totalQuestions: 5,
 
   min: 1,
   max: 9,
