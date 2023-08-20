@@ -146,8 +146,10 @@ function pressValue(value, num, prop) {
   if(isNaN(num)) {
     if(value === Constants.CLEAR) {
       state[prop] = 0;
+      setFocused($main.$focused);
     } else if(value === Constants.BACKSPACE) {
       state[prop] = Math.floor(state[prop] / 10);
+      setFocused($main.$focused);
     } else if(state.inProgress && value === Constants.ENTER) {
       verifyEquation();
     } else if(value === Constants.ENTER) {
@@ -159,8 +161,8 @@ function pressValue(value, num, prop) {
       value = (state[prop] || 0) + '' + value;
     }
     state[prop] = parseInt(value);
+    setFocused($main.$focused);
   }
-  setFocused($main.$focused);
   refreshDisplay();
 }
 
