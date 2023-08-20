@@ -6,11 +6,19 @@ function buildKeypadRow(...numbers) {
   `);
 }
 
-export const buildKeypad = function() {
-  const $container = $(`<article class="flex-col flex-center flex-middle keypad"></article>`);
-  $container.append(buildKeypadRow(7, 8, 9));
-  $container.append(buildKeypadRow(4, 5, 6));
-  $container.append(buildKeypadRow(1, 2, 3));
+export const buildKeypad = function(reverse) {
+  const $container = $(`<article class="flex-col keypad"></article>`);
+  const rows = [
+    buildKeypadRow(7, 8, 9),
+    buildKeypadRow(4, 5, 6),
+    buildKeypadRow(1, 2, 3)
+  ];
+
+  if(reverse) {
+    rows.reverse();
+  }
+
+  rows.forEach(r => $container.append(r));
   $container.append(buildKeypadRow(0));
   return $container;
 }

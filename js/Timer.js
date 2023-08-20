@@ -23,7 +23,7 @@ function Timer() {
 }
 
 export const buildTimerLabels = function() {
-  const $container = $(`<label class="flex flex-center flex-middle timer-labels"> 00:00:00 </label>`);
+  const $container = $(`<label class="flex flex-center flex-middle timer-labels"> 0.00 </label>`);
   return $container;
 }
 

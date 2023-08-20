@@ -1,5 +1,6 @@
 :root {
   --green: rgb(0, 204, 0);
+  --small-dim: 2.1rem;
 }
 
 * {
@@ -46,15 +47,18 @@ html, body {
 }
 
 /* LAYOUT */
+main {
+  justify-content: flex-end;
+}
+
 footer {
   padding: 2% 5%;
-  justify-content: space-between;
 }
 
 footer > a {
   display: flex;
-  height: 5rem;
-  width: 5rem;
+  height: var(--small-dim);
+  width: var(--small-dim);
 }
 
 .invisible {
@@ -63,8 +67,8 @@ footer > a {
 
 /* SPECIFIC STYLES */
 
-.menu-labels {
-  min-width: 10rem;
+.menu-labels label{
+  margin: 1rem;
 }
 
 .menu-labels > *,
@@ -75,7 +79,7 @@ footer > a {
 
 .menu-labels label, 
 .output-labels label {
-  font-size: 4rem;
+  font-size: 3.5rem;
   border-bottom: .3rem solid black;
   min-width: 3rem;
   height: 5rem;
@@ -88,6 +92,11 @@ footer > a {
 }
 
 .menu-labels label.focused {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.menu-labels label.focused + span {
   color: var(--green);
 }
 
@@ -121,32 +130,39 @@ footer > a {
   color: white;
 }
 
-.bw-btn.inverted {
+.bw-btn.inverted-btn {
   background: black;
   color: white;
 }
 
-.bw-btn.inverted:active {
+.bw-btn.inverted-btn:active {
   background: white;
   color: black;
 }
 
 .keypad .keypad-btn {
-  width: 5rem;
-  height: 5rem;
+  width: 4.5rem;
+  height: 4.5rem;
 }
 
-.share-btn {
-  padding: 1rem 0;
-  width: 5rem;
-  height: 5rem;
-  font-size: 2rem;
+.small-btn {
+  width: var(--small-dim);
+  height: var(--small-dim);
+  font-size: 1rem;
 }
 
 .status-success {
   color: var(--green);
 }
 
+.status-success label {
+  border-color: var(--green);
+}
+
 .status-fail {
   color: red;
+}
+
+.status-fail label {
+  border-color: red;
 }

@@ -1,5 +1,5 @@
 
-export const buildOutputLabels = function() {
+export const buildEquationLabels = function() {
   const $container = $(`<section class="flex flex-center output-labels"></section>`);
   $container.$m1 = $(`<label class="flex flex-middle"> </label>`);
   $container.$m2 = $(`<label class="flex flex-middle"> </label>`);
