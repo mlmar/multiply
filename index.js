@@ -288,11 +288,8 @@ function refreshDisplay() {
   if(state.inProgress) { // Hide extra elements if timer exists
     $main.$menuLabels.hide();
     $footer.$shareBtn.hide();
-    $footer.$settingsPanel.hide();
-  } else {
-    $footer.$settingsPanel.show();
   }
-  
+
   $footer.toggleClass(Constants.INVISIBLE, state.inProgress);
 
   let $labels = [
