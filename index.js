@@ -210,6 +210,7 @@ function start() {
 function end() {
   state.inProgress = false;
   setFocused(null);
+  equationGenerator.reset();
   timer.stop();
 }
 

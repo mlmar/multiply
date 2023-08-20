@@ -33,4 +33,8 @@ export const EquationGenerator = function() {
     _equations.push(equation);
     return [a, b];
   }
+
+  this.reset = function() {
+    _equations = [];
+  }
 }
