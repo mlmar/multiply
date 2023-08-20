@@ -102,7 +102,7 @@ function handleKeypadClick(event) {
 function pressValue(value, num, prop) {
   if(isNaN(num)) {
     if(value === Constants.CLEAR) {
-      state[prop] = null;
+      state[prop] = 0;
     } else if(value === Constants.BACKSPACE) {
       state[prop] = Math.floor(state[prop] / 10);
     } else if(state.inProgress && value === Constants.ENTER) {
@@ -131,6 +131,8 @@ function start() {
     state.inProgress = true;
     state.time = 0;
     state.currentQuestions = 0;
+    state.min = parseInt($main.$menuLabels.$min.text());
+    state.max = parseInt($main.$menuLabels.$max.text());
     $main.$focused = $main.$outputLabels.$m3;
     generateRandomEquation();
     timer.start(update);
