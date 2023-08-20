@@ -1,6 +1,6 @@
 import { buildMenuLabels } from './js/Menu.js';
 import Timer, { buildTimerLabels } from './js/Timer.js';
-import { buildEquationLabels } from './js/Equation.js';
+import { buildEquationLabels, EquationGenerator } from './js/Equation.js';
 import { buildKeypad } from './js/Keypad.js';
 import { shareText } from './js/ShareUtil.js';
 
@@ -25,6 +25,7 @@ const state = {
 }
 
 let timer = null;
+let equationGenerator = null;
 
 let $main = null;
 let $footer = null;
@@ -35,6 +36,9 @@ function init() {
 
   $main = $('main');
   $footer = $('footer');
+
+  timer = new Timer();
+  equationGenerator = new EquationGenerator();
 
   // Header
   buildMainHeader();
@@ -59,7 +63,6 @@ function buildMainHeader() {
   // Timer
   $main.$timerLabels = buildTimerLabels();
   $main.$header.append($main.$timerLabels);
-  timer = new Timer();
 
   // Output
   $main.$equationLabels = buildEquationLabels();
@@ -232,8 +235,9 @@ function verifyEquation() {
 }
 
 function generateRandomEquation() {
-  state.val0 = random(state.min, state.max);
-  state.val1 = random(state.min, state.max);
+  let [a,b] = equationGenerator.generate(state.min, state.max);
+  state.val0 = a;
+  state.val1 = b;
   state.val2 = null;
 }
 

@@ -12,3 +12,25 @@ export const buildEquationLabels = function() {
   $container.append($container.$m3)
   return $container;
 }
+
+export const EquationGenerator = function() {
+  let _equations = [];
+
+  function random(min, max) {
+    return Math.round(Math.random() * (max - min) + min);
+  }
+  
+  this.generate = function(min, max) {
+    let a = null;
+    let b = null;
+    let equation = null;
+    do {
+      a = random(min, max);
+      b = random(min, max);
+      equation = [a, b].sort().join(',');
+    } while(_equations.includes(equation));
+
+    _equations.push(equation);
+    return [a, b];
+  }
+}

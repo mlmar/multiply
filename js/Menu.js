@@ -18,6 +18,6 @@ export const buildMenuLabels = function(min, max, totalQuestions) {
   $container.$totalQuestions = $totalQuestionsContainer.find('label');
   $container.append($minContainer);
   $container.append($maxContainer);
-  $container.append($totalQuestionsContainer);
+  // $container.append($totalQuestionsContainer);
   return $container;
 }
