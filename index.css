@@ -1,0 +1,168 @@
+:root {
+  --green: rgb(0, 204, 0);
+  --small-dim: 2.1rem;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  touch-action: manipulation !important;
+}
+
+html {
+  position: fixed;
+}
+
+html, body {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+/* FLEX */
+.flex, .flex-col {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-fit {
+  flex: 1 0 auto;
+}
+.flex-fill {
+  flex: 1 1;
+}
+.flex-center {
+  align-items: center;
+}
+.flex-middle {
+  justify-content: center;
+}
+.flex-space-between {
+  justify-content: space-between;
+}
+
+/* LAYOUT */
+main {
+  justify-content: flex-end;
+}
+
+footer {
+  padding: 2% 5%;
+}
+
+footer > a {
+  display: flex;
+  height: var(--small-dim);
+  width: var(--small-dim);
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+/* SPECIFIC STYLES */
+
+.menu-labels label{
+  margin: 1rem;
+}
+
+.menu-labels > *,
+.output-labels > * {
+  font-weight: bold;
+  margin-bottom: .5rem;
+}
+
+.menu-labels label, 
+.output-labels label {
+  font-size: 3.5rem;
+  border-bottom: .3rem solid black;
+  min-width: 3rem;
+  height: 5rem;
+}
+
+.menu-labels span {
+  font-size: 1.5rem;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.menu-labels label.focused {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.menu-labels label.focused + span {
+  color: var(--green);
+}
+
+.timer-labels {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.timer-labels,
+.output-labels {
+  pointer-events: none;
+}
+
+.output-labels span {
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin: 0 1.5rem;
+}
+
+.bw-btn {
+  font-size: 2rem;
+  font-weight: bold;
+  background: white;
+  border: .2rem solid black;
+  margin: .15rem;
+  color: black;
+}
+
+.bw-btn:active {
+  background: black;
+  color: white;
+}
+
+.bw-btn.inverted-btn {
+  background: black;
+  color: white;
+}
+
+.bw-btn.inverted-btn:active {
+  background: white;
+  color: black;
+}
+
+.keypad .keypad-btn {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.small-btn {
+  width: var(--small-dim);
+  height: var(--small-dim);
+  font-size: 1rem;
+}
+
+.status-success {
+  color: var(--green);
+}
+
+.status-success label {
+  border-color: var(--green);
+}
+
+.status-fail {
+  color: red;
+}
+
+.status-fail label {
+  border-color: red;
+}
