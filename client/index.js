@@ -179,7 +179,9 @@ async function handleTabClick() {
   } else {
     const result = await getScores();
     $panel0.empty();
+    $panel0.append('<h1> ... </h1>');
     $panel0.$leaderboard = await buildLeaderboard(state.scoreName, result.data);
+    $panel0.empty();
     $panel0.append($panel0.$leaderboard);
     $activePanel = $panel0;
   }
