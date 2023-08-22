@@ -216,7 +216,7 @@ function handleInsertClick() {
 
     $panel1.$leaderboardInput.$name.on('input', function(event) {
       let value = event.target.value;
-      state.name = value.toUpperCase().substr(0,5);
+      state.name = value.toUpperCase().substr(0,10);
       $panel1.$leaderboardInput.$name.val(state.name);
       $panel1.$leaderboardInput.$okBtn.prop('disabled', !state.name);
       storeSettingsToLocalStorage();
