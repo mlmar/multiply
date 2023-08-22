@@ -179,8 +179,8 @@ async function handleTabClick() {
     $activePanel = $panel0;
     $panel0.empty();
     $panel0.$leaderboard = buildLeaderboard();
-    $panel0.$leaderboard.empty();
-    $panel0.$leaderboard.append('<h1> ... </h1>');
+    $panel0.$leaderboard.children().not(':first-child').remove();
+    $panel0.$leaderboard.append('<h1 class="loading"></h1>');
     $panel0.append($panel0.$leaderboard);
     refreshDisplay();
     
@@ -234,7 +234,8 @@ function handleInsertClick() {
 }
 
 async function handleLeaderboardInsertClick() {
-  $panel1.$leaderboardInput.$okBtn.text('...');
+  $panel1.$leaderboardInput.$okBtn.text('');
+  $panel1.$leaderboardInput.$okBtn.addClass('loading');
   $panel1.$leaderboardInput.$okBtn.off('click', handleLeaderboardInsertClick);
   $panel1.$leaderboardInput.$cancelBtn.hide();
 

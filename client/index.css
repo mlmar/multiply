@@ -226,3 +226,25 @@ footer > a {
 .status-fail label {
   border-color: red;
 }
+
+@keyframes ellipsis {
+  0%  { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+.loading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loading:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: ellipsis 1s infinite;
+}
