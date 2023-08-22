@@ -49,11 +49,13 @@ export function buildLeaderboardInput(name, time, equations, label) {
   $container.$time = $(`<h1> ${time}s </h1>`);
   $container.$equations = buildEquationsTable(equations);
   $container.$label = $(`<h2> ${label || ''} </h2>`);
-  $container.$insertBtn = $(`<button class="flex flex-center flex-middle bw-btn inverted-btn" disabled> Post ${Constants.INSERT_CODE} </button>`);
+  $container.$okBtn = $(`<button class="flex flex-center flex-middle bw-btn inverted-btn" disabled> Post ${Constants.INSERT_CODE} </button>`);
+  $container.$cancelBtn = $(`<button class="flex flex-center flex-middle bw-btn"> Cancel </button>`);
   $container.append($container.$name);
   $container.append($container.$time);
   $container.append($container.$equations);
   $container.append($container.$label);
-  $container.append($container.$insertBtn);
+  $container.append($container.$okBtn);
+  $container.append($container.$cancelBtn);
   return $container;
 }

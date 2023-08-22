@@ -1,7 +1,7 @@
 import Timer, { buildTimerLabels } from './js/modules/Timer.js';
 import { buildEquationLabels, EquationGenerator } from './js/modules/Equation.js';
 import { buildKeypad } from './js/modules/Keypad.js';
-import { buildLeaderboard, buildLeaderboardInput } from './js/modules/LeaderBoard.js';
+import { buildLeaderboard, buildLeaderboardInput } from './js/modules/Leaderboard.js';
 import { shareText } from './js/modules/ShareUtil.js';
 import { getScores, insertScore } from './js/service/ScoresService.js';
 
@@ -202,36 +202,40 @@ function handleInsertClick() {
       let value = event.target.value;
       state.name = value.toUpperCase().substr(0,5);
       $panel1.$leaderboardInput.$name.val(state.name);
-      $panel1.$leaderboardInput.$insertBtn.prop('disabled', !state.name);
+      $panel1.$leaderboardInput.$okBtn.prop('disabled', !state.name);
       storeSettingsToLocalStorage();
     });
 
-    $panel1.$leaderboardInput.$insertBtn.on('click', async function() {
-      if($panel1.$leaderboardInput.result) {
-        handleInsertClick();
-      }
-
-      $footer.$insertBtn.hide();
-
-      const result = await insertScore({
-        name: state.name, 
-        time: state.time,
-        equations: state.equations
-      });
-
-      $panel1.$leaderboardInput.$name.val(result.data.record.name);
-      $panel1.$leaderboardInput.$name.prop('disabled', true);
-      $panel1.$leaderboardInput.$label.text(`Your time has been added to the leaderboard as ${result.data.record.name}.`);
-      $panel1.$leaderboardInput.$insertBtn.text('Ok');
-      $panel1.$leaderboardInput.result = result;
-    });
+    $panel1.$leaderboardInput.$okBtn.on('click', handleLeaderboardInsertClick);
+    $panel1.$leaderboardInput.$cancelBtn.on('click', handleInsertClick);
 
     $panel1.$leaderboardInput.$name.get(0).focus();
-    $panel1.$leaderboardInput.$insertBtn.prop('disabled', !state.name);
+    $panel1.$leaderboardInput.$okBtn.prop('disabled', !state.name);
 
     $activePanel = $panel1;
   }
   refreshDisplay();
+}
+
+async function handleLeaderboardInsertClick() {
+  $panel1.$leaderboardInput.$okBtn.text('...');
+  $panel1.$leaderboardInput.$okBtn.off('click', handleLeaderboardInsertClick);
+  $panel1.$leaderboardInput.$cancelBtn.hide();
+
+  $footer.$insertBtn.hide();
+  const result = await insertScore({
+    name: state.name, 
+    time: state.time,
+    equations: state.equations
+  });
+
+  $panel1.$leaderboardInput.$name.val(result.data.record.name);
+  $panel1.$leaderboardInput.$name.prop('disabled', true);
+  $panel1.$leaderboardInput.$label.text(`Your time has been added to the leaderboard as ${result.data.record.name}.`);
+  $panel1.$leaderboardInput.$okBtn.hide();
+  $panel1.$leaderboardInput.$cancelBtn.text('Ok');
+  $panel1.$leaderboardInput.$cancelBtn.addClass('inverted');
+  $panel1.$leaderboardInput.$cancelBtn.show();
 }
 
 // BEGIN LOGIC
