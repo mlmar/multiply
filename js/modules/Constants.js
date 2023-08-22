@@ -15,6 +15,7 @@ export default {
   BACK_CODE: '&#8634;',
   TAB_CODE: '&#x2630;',
   REVERSE_CODE: '&#8645;',
+  HOME_CODE: '&#8756;',
   SHARE_CODE: '&#10148;',
   INSERT_CODE: '&#x270E;',
   MGH_MULTIPLY: 'mgh_multiply',

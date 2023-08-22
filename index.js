@@ -101,6 +101,10 @@ function buildTabPanel() {
   // Reverse keypad button
   $footer.$revertBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.REVERSE_CODE} </button>`)
   $footer.$revertBtn.on('click', handleReverseClick);
+
+  // Home button
+  $footer.$homeBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.HOME_CODE} </button>`)
+  $footer.$homeBtn.on('click', handleHomeClick);
   
   // Share button
   $footer.$shareBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.SHARE_CODE} </button>`)
@@ -112,6 +116,7 @@ function buildTabPanel() {
 
   $footer.$tabPanel.append($footer.$leaderboardBtn);
   $footer.$tabPanel.append($footer.$revertBtn);
+  $footer.$tabPanel.append($footer.$homeBtn);
   $footer.$tabPanel.append($footer.$shareBtn);
   $footer.$tabPanel.append($footer.$insertBtn);
 }
@@ -184,6 +189,11 @@ async function handleTabClick() {
 function handleReverseClick() {
   state.keypadReversed = !state.keypadReversed;
   buildMainKeypad(state.keypadReversed);
+}
+
+function handleHomeClick() {
+  $activePanel = $main;
+  refreshDisplay();
 }
 
 function handleShareClick() {
@@ -327,13 +337,9 @@ function refreshDisplay() {
 
   const isTimerStopped = !state.inProgress && state.time !== Constants.ZERO_TIME
 
-  if(isTimerStopped) { // Hide extra elements if timer exists
-    $footer.$shareBtn.show();
-    $footer.$insertBtn.show();
-  } else {
-    $footer.$shareBtn.hide();
-    $footer.$insertBtn.hide();
-  }
+  // enable sharing elements if timer stopped
+  $footer.$shareBtn.prop('disabled', !isTimerStopped);
+  $footer.$insertBtn.prop('disabled', !isTimerStopped);
 
   $footer.toggleClass(Constants.INVISIBLE, state.inProgress);
 
@@ -348,13 +354,8 @@ function refreshDisplay() {
     $labels.forEach(l => l.toggleClass(Constants.STATUS_SUCCESS, isSuccess));
     $labels.forEach(l => l.toggleClass(Constants.STATUS_FAIL, !isSuccess));
 
-    if(isSuccess) {
-      $footer.$shareBtn.show();
-      $footer.$insertBtn.show();
-    } else {
-      $footer.$shareBtn.hide();
-      $footer.$insertBtn.hide();
-    }
+    $footer.$shareBtn.prop('disabled', !isSuccess);
+    $footer.$insertBtn.prop('disabled', !isSuccess);
   } else {
     $main.$keypad.$enter.html(Constants.ENTER_CODE);
     $labels.forEach(l => l.removeClass(Constants.STATUS_SUCCESS));

@@ -132,8 +132,8 @@ footer > a {
   border-bottom: .2rem solid black;
 }
 
-.leaderboard > *,
-.leaderboard-input > * {
+.leaderboard > *:not(:last-child),
+.leaderboard-input > *:not(:last-child) {
   margin-bottom: 1.5rem;
 }
 
@@ -175,7 +175,7 @@ footer > a {
   cursor: pointer;
 }
 
-.bw-btn:active {
+.bw-btn:active:not(:disabled) {
   background: black;
   color: white;
 }
@@ -185,7 +185,7 @@ footer > a {
   color: white;
 }
 
-.bw-btn.inverted-btn:active {
+.bw-btn.inverted-btn:active:not(:disabled) {
   background: white;
   color: black;
 }
