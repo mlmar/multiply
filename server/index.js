@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const mongoUtil = require('./util/MongoUtil.js');
+const { PORT, DEV, MONGODB_SCORES_COLLECTION } = process.env;
 
 app.use(cors({ origin: '*', credentials: true, optionsSuccessStatus: 200 }));
 app.use(express.json({ limit: '1mb' }));
