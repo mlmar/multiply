@@ -31,14 +31,16 @@ export function buildLeaderboard(name, data) {
       <h1> Leaderboard </h1>
     </section>
   `);
-  data.forEach(function(row, i) {
-    const $row = buildScoreRow(row);
-    if(name === row) {
-      $row.addClass('status-success');
-    }
-    $container['$row' + i] = $row;
-    $container.append($row);
-  });
+  if(data) {
+    data.forEach(function(row, i) {
+      const $row = buildScoreRow(row);
+      if(name === row) {
+        $row.addClass('status-success');
+      }
+      $container['$row' + i] = $row;
+      $container.append($row);
+    });
+  }
 
   return $container;
 }
