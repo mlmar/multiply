@@ -7,7 +7,7 @@ function buildKeypadRow(...numbers) {
 }
 
 export const buildKeypad = function(reverse) {
-  const $container = $(`<article class="flex-col keypad"></article>`);
+  const $container = $(`<article class="flex-col keypad" tabindex="0" autofocus></article>`);
   const rows = [
     buildKeypadRow(7, 8, 9),
     buildKeypadRow(4, 5, 6),

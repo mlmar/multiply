@@ -1,3 +1,4 @@
+import Constants from './Constants.js';
 
 export const buildEquationLabels = function() {
   const $container = $(`<section class="flex flex-center output-labels"></section>`);
@@ -6,7 +7,7 @@ export const buildEquationLabels = function() {
   $container.$m3 = $(`<label class="flex flex-middle" data-state="val2"> </label>`);
 
   $container.append($container.$m1)
-  $container.append(`<span class="flex flex-middle"> &#10005; </span>`)
+  $container.append(`<span class="flex flex-middle"> ${Constants.MULTIPLY_CODE} </span>`)
   $container.append($container.$m2)
   $container.append(`<span class="flex flex-middle"> = </span>`)
   $container.append($container.$m3)
@@ -15,6 +16,7 @@ export const buildEquationLabels = function() {
 
 export const EquationGenerator = function() {
   let _equations = [];
+  let _originalEquations = [];
 
   function random(min, max) {
     return Math.round(Math.random() * (max - min) + min);
@@ -31,10 +33,16 @@ export const EquationGenerator = function() {
     } while(_equations.includes(equation));
 
     _equations.push(equation);
+    _originalEquations.push([a, b, a*b]);
     return [a, b];
+  }
+
+  this.results = function() {
+    return _originalEquations;
   }
 
   this.reset = function() {
     _equations = [];
+    _originalEquations = [];
   }
 }
