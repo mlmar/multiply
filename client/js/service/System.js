@@ -1,4 +1,4 @@
-const DEV = true;
+const DEV = false;
 
 const LOCAL_SERVER = 'http://192.168.0.89:3300';
 const DEPLOYED_SERVER = 'https://mlmar-multiply.vercel.app';
