@@ -116,6 +116,55 @@ footer > a {
   margin: 0 1.5rem;
 }
 
+.leaderboard, .leaderboard-input {
+  width: 20rem;
+}
+
+.leaderboard, .leaderboard-input {
+  overflow: auto;
+  border: .15rem solid black;
+  padding: 2rem;
+  max-height: 70vh;
+}
+
+.leaderboard > *:first-child,
+.leaderboard-input > *:first-child {
+  border-bottom: .2rem solid black;
+}
+
+.leaderboard > *,
+.leaderboard-input > * {
+  margin-bottom: 1.5rem;
+}
+
+.leaderboard-equations {
+  padding: .5rem 1rem;
+  font-size: .8rem;
+}
+
+.leaderboard-input h1 {
+  padding-left: 1rem;
+}
+
+.leaderboard-input input,
+.leaderboard-input input:disabled {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
+  border: none;
+  border-bottom: .2rem solid black;
+  background: none;
+}
+
+.leaderboard-input button {
+  padding: .5rem;
+  font-size: 1.2rem;
+}
+
+
+
 .bw-btn {
   font-size: 2rem;
   font-weight: bold;
@@ -123,6 +172,7 @@ footer > a {
   border: .2rem solid black;
   margin: .15rem;
   color: black;
+  cursor: pointer;
 }
 
 .bw-btn:active {
@@ -138,6 +188,16 @@ footer > a {
 .bw-btn.inverted-btn:active {
   background: white;
   color: black;
+}
+
+
+.bw-btn.inverted-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.keypad:focus {
+  outline: none;
 }
 
 .keypad .keypad-btn {

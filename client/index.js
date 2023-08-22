@@ -1,33 +1,36 @@
-import { buildMenuLabels } from './js/Menu.js';
-import Timer, { buildTimerLabels } from './js/Timer.js';
-import { buildEquationLabels, EquationGenerator } from './js/Equation.js';
-import { buildKeypad } from './js/Keypad.js';
-import { shareText } from './js/ShareUtil.js';
+import Timer, { buildTimerLabels } from './js/modules/Timer.js';
+import { buildEquationLabels, EquationGenerator } from './js/modules/Equation.js';
+import { buildKeypad } from './js/modules/Keypad.js';
+import { buildLeaderboard, buildLeaderboardInput } from './js/modules/LeaderBoard.js';
+import { shareText } from './js/modules/ShareUtil.js';
+import { getScores, insertScore } from './js/service/ScoresService.js';
 
-import Constants from './js/Constants.js';
+import Constants from './js/modules/Constants.js';
 
 $(document).ready(init);
 const state = {
-  inProgress: false,
-  time: '0.00',
-  currentQuestions: 0,
-  totalQuestions: 5,
+  name: null,
+  equations: [],
+  time: Constants.ZERO_TIME,
+  scoreName: null,
 
-  min: 1,
-  max: 9,
+  inProgress: false,
+  currentQuestions: 0,
   
   val0: null,
   val1: null,
   val2: null,
 
   keypadReversed: false,
-  settingsActive: false,
 }
 
 let timer = null;
 let equationGenerator = null;
 
+let $activePanel = null;
 let $main = null;
+let $panel0 = null;
+let $panel1 = null;
 let $footer = null;
 
 // Initialzie UI and event handlers
@@ -35,7 +38,11 @@ function init() {
   loadSettingsFromLocalStorage();
 
   $main = $('main');
+  $panel0 = $('#panel0');
+  $panel1 = $('#panel1');
   $footer = $('footer');
+
+  $activePanel = $main;
 
   timer = new Timer();
   equationGenerator = new EquationGenerator();
@@ -47,7 +54,7 @@ function init() {
   buildMainKeypad(state.keypadReversed);
 
   // Build settings buttons
-  buildSettingsPanel();
+  buildTabPanel();
 
   refreshDisplay();
 }
@@ -55,10 +62,6 @@ function init() {
 // BEGIN UI BUILDER
 function buildMainHeader() {
   $main.$header = $(`<section class="flex flex-col flex-fill flex-middle header"></section>`);
-
-  $main.$menuLabels = buildMenuLabels(state.min, state.max, state.totalQuestions);
-  $main.$header.append($main.$menuLabels);
-  $main.$menuLabels.children().on('click', handleMenuLabelClick);
 
   // Timer
   $main.$timerLabels = buildTimerLabels();
@@ -83,43 +86,41 @@ function buildMainKeypad(reverse) {
   $main.$keypad.children().last().append($main.$keypad.$enter);
   $main.$keypad.find('.keypad-btn').on('touchstart mouseup', handleKeypadClick);
   $main.$keypad.find('.keypad-btn').on('touchend', e => e.preventDefault());
-  $(document).on('keydown', handleKeypadClick);
+  $main.$keypad.on('keydown', handleKeypadClick);
   $main.append($main.$keypad);
 }
 
 
-function buildSettingsPanel() {
-  $footer.$settingsPanel = $footer.find('section');
+function buildTabPanel() {
+  $footer.$tabPanel = $footer.find('section');
 
   // Settings button
-  $footer.$settingsButton = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.SETTINGS_CODE} </button>`)
-  $footer.$settingsButton.on('click', handleSettingsClick);
+  $footer.$leaderboardBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.TAB_CODE} </button>`)
+  $footer.$leaderboardBtn.on('click', handleTabClick);
   
   // Reverse keypad button
-  $footer.$reverseButton = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.REVERSE_CODE} </button>`)
-  $footer.$reverseButton.on('click', handleReverseClick);
+  $footer.$revertBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.REVERSE_CODE} </button>`)
+  $footer.$revertBtn.on('click', handleReverseClick);
   
   // Share button
   $footer.$shareBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.SHARE_CODE} </button>`)
   $footer.$shareBtn.on('click', handleShareClick);
 
-  $footer.$settingsPanel.append($footer.$settingsButton);
-  $footer.$settingsPanel.append($footer.$reverseButton);
-  $footer.$settingsPanel.append($footer.$shareBtn);
+  // Insert button
+  $footer.$insertBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.INSERT_CODE} </button>`)
+  $footer.$insertBtn.on('click', handleInsertClick);
+
+  $footer.$tabPanel.append($footer.$leaderboardBtn);
+  $footer.$tabPanel.append($footer.$revertBtn);
+  $footer.$tabPanel.append($footer.$shareBtn);
+  $footer.$tabPanel.append($footer.$insertBtn);
 }
 
 // END UI BUILDER
 
 // BEGIN HANDLERS
 
-function handleMenuLabelClick(event) {
-  setFocused($(event.currentTarget).find('label'));
-  refreshDisplay();
-}
-
 function handleKeypadClick(event) {
-  let $el = $main.$focused;
-
   let $target = $(event.target);
 
   if(event.touches?.length) { // handle multiple touch events
@@ -133,7 +134,6 @@ function handleKeypadClick(event) {
 
   let value = $target?.data('value');
   let num = parseInt(value);
-  let prop = $el?.data('state');
   let key = event.key?.toUpperCase();
 
   if(key) {
@@ -141,37 +141,43 @@ function handleKeypadClick(event) {
     num = parseInt(key);
   }
 
-  pressValue(value, num, prop);
+  pressValue(value, num);
   storeSettingsToLocalStorage();
 }
 
-function pressValue(value, num, prop) {
+function pressValue(value, num) {
   if(isNaN(num)) {
-    if(value === Constants.CLEAR) {
-      state[prop] = 0;
-      setFocused($main.$focused);
-    } else if(value === Constants.BACKSPACE) {
-      state[prop] = Math.floor(state[prop] / 10);
-      setFocused($main.$focused);
-    } else if(state.inProgress && value === Constants.ENTER) {
-      verifyEquation();
+    if(state.inProgress) {
+      if(value === Constants.CLEAR) {
+        state.val2 = 0;
+      } else if(value === Constants.BACKSPACE) {
+        state.val2 = Math.floor(state.val2 / 10);
+      } else if(value === Constants.ENTER) {
+        verifyEquation();
+      }
     } else if(value === Constants.ENTER) {
       start();
     }
-  } else {
+  } else if(state.inProgress) {
     value = num;
     if($main.$focused === $main.$prevFocused) {
-      value = (state[prop] || 0) + '' + value;
+      value = (state.val2 || 0) + '' + value;
     }
-    state[prop] = parseInt(value);
-    setFocused($main.$focused);
+    state.val2 = parseInt(value);
   }
   refreshDisplay();
 }
 
-function handleSettingsClick() {
-  state.settingsActive = !state.settingsActive;
-  setFocused(null);
+async function handleTabClick() {
+  if($activePanel === $panel0) {
+    $activePanel = $main;
+  } else {
+    const result = await getScores();
+    $panel0.empty();
+    $panel0.$leaderboard = await buildLeaderboard(state.scoreName, result.data);
+    $panel0.append($panel0.$leaderboard);
+    $activePanel = $panel0;
+  }
   refreshDisplay();
 }
 
@@ -184,24 +190,63 @@ function handleShareClick() {
   shareText(`Can you beat ${state.time} seconds?`);
 }
 
-function setFocused($el) {
-  $main.$prevFocused = $main.$focused;
-  $main.$focused = $el;
+function handleInsertClick() {
+  if($activePanel === $panel1) {
+    $activePanel = $main;
+  } else {
+    $panel1.empty();
+    $panel1.$leaderboardInput = buildLeaderboardInput(state.name, state.time, state.equations);
+    $panel1.append($panel1.$leaderboardInput);
+
+    $panel1.$leaderboardInput.$name.on('input', function(event) {
+      let value = event.target.value;
+      state.name = value.toUpperCase().substr(0,5);
+      $panel1.$leaderboardInput.$name.val(state.name);
+      $panel1.$leaderboardInput.$insertBtn.prop('disabled', !state.name);
+      storeSettingsToLocalStorage();
+    });
+
+    $panel1.$leaderboardInput.$insertBtn.on('click', async function() {
+      if($panel1.$leaderboardInput.result) {
+        handleInsertClick();
+      }
+
+      $footer.$insertBtn.hide();
+
+      const result = await insertScore({
+        name: state.name, 
+        time: state.time,
+        equations: state.equations
+      });
+
+      $panel1.$leaderboardInput.$name.val(result.data.record.name);
+      $panel1.$leaderboardInput.$name.prop('disabled', true);
+      $panel1.$leaderboardInput.$label.text(`Your time has been added to the leaderboard as ${result.data.record.name}.`);
+      $panel1.$leaderboardInput.$insertBtn.text('Ok');
+      $panel1.$leaderboardInput.result = result;
+    });
+
+    $panel1.$leaderboardInput.$name.get(0).focus();
+    $panel1.$leaderboardInput.$insertBtn.prop('disabled', !state.name);
+
+    $activePanel = $panel1;
+  }
+  refreshDisplay();
 }
 
 // BEGIN LOGIC
 
 function start() {
-  state.settingsActive = false;
+  state.tabActive = false;
 
   if(state.inProgress) {
-    state.time = '0.00';
+    state.time = Constants.ZERO_TIME;
     refreshDisplay();
   } else {
     state.inProgress = true;
-    state.time = 0;
+    state.time = Constants.ZERO_TIME;
     state.currentQuestions = 0;
-    setFocused($main.$equationLabels.$m3);
+    equationGenerator.reset();
     generateRandomEquation();
     timer.start(update);
   }
@@ -209,8 +254,7 @@ function start() {
 
 function end() {
   state.inProgress = false;
-  setFocused(null);
-  equationGenerator.reset();
+  state.equations = equationGenerator.results();
   timer.stop();
 }
 
@@ -225,7 +269,7 @@ function update(time) {
 
 function verifyEquation() {
   if(state.val0 * state.val1 === state.val2) {
-    if(++state.currentQuestions < state.totalQuestions) {
+    if(++state.currentQuestions < Constants.TOTAL_QUESTIONS) {
       generateRandomEquation();
     } else {
       state.inProgress = false;
@@ -236,14 +280,10 @@ function verifyEquation() {
 }
 
 function generateRandomEquation() {
-  let [a,b] = equationGenerator.generate(state.min, state.max);
+  let [a,b] = equationGenerator.generate(Constants.MIN, Constants.MAX);
   state.val0 = a;
   state.val1 = b;
   state.val2 = null;
-}
-
-function random(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
 }
 
 // END LOGIC
@@ -252,9 +292,8 @@ function random(min, max) {
 
 function storeSettingsToLocalStorage() {
   let settings = {
-    min: state.min,
-    max: state.max,
-    keypadReversed: state.keypadReversed
+    keypadReversed: state.keypadReversed,
+    name: state.name
   };
   settings = JSON.stringify(settings);
   localStorage.setItem(Constants.MGH_MULTIPLY, settings);
@@ -265,9 +304,8 @@ function loadSettingsFromLocalStorage() {
     let settings = localStorage.getItem(Constants.MGH_MULTIPLY);
     if(settings) {
       settings = JSON.parse(settings);
-      state.min = settings.min;
-      state.max = settings.max;
       state.keypadReversed = settings.keypadReversed;
+      state.name = settings.name;
     }
   } catch {
     localStorage.setItem(Constants.MGH_MULTIPLY, null);
@@ -280,19 +318,17 @@ function loadSettingsFromLocalStorage() {
 // END HANDLERS
 
 function refreshDisplay() {
-  if(state.settingsActive) {
-    $main.$menuLabels.show();
-    $main.$timerLabels.hide();
-    $main.$equationLabels.hide();
-  } else {
-    $main.$menuLabels.hide();
-    $main.$timerLabels.show();
-    $main.$equationLabels.show();
-  }
+  $activePanel.show();
+  $activePanel.siblings(':not(footer)').hide();
 
-  if(state.inProgress) { // Hide extra elements if timer exists
-    $main.$menuLabels.hide();
+  const isTimerStopped = !state.inProgress && state.time !== Constants.ZERO_TIME
+
+  if(isTimerStopped) { // Hide extra elements if timer exists
+    $footer.$shareBtn.show();
+    $footer.$insertBtn.show();
+  } else {
     $footer.$shareBtn.hide();
+    $footer.$insertBtn.hide();
   }
 
   $footer.toggleClass(Constants.INVISIBLE, state.inProgress);
@@ -302,16 +338,18 @@ function refreshDisplay() {
     $main.$equationLabels
   ];
 
-  if(!state.inProgress && state.time !== '0.00') { // Change text and UI colors if user fails or succeeds
+  if(isTimerStopped) { // Change text and UI colors if user fails or succeeds
     $main.$keypad.$enter.html(Constants.BACK_CODE);
-    let isSuccess = state.currentQuestions >= state.totalQuestions;
+    const isSuccess = state.currentQuestions >= Constants.TOTAL_QUESTIONS;
     $labels.forEach(l => l.toggleClass(Constants.STATUS_SUCCESS, isSuccess));
     $labels.forEach(l => l.toggleClass(Constants.STATUS_FAIL, !isSuccess));
 
     if(isSuccess) {
       $footer.$shareBtn.show();
+      $footer.$insertBtn.show();
     } else {
       $footer.$shareBtn.hide();
+      $footer.$insertBtn.hide();
     }
   } else {
     $main.$keypad.$enter.html(Constants.ENTER_CODE);
@@ -319,16 +357,8 @@ function refreshDisplay() {
     $labels.forEach(l => l.removeClass(Constants.STATUS_FAIL));
   }
 
-  $main.find('.' + Constants.FOCUSED).removeClass(Constants.FOCUSED);
-  if($main.$focused) {
-    $main.$focused.addClass(Constants.FOCUSED);
-  }
-
   // Refresh text
   $main.$timerLabels.text(state.time + 's');
-  $main.$menuLabels.$min.text(state.min);
-  $main.$menuLabels.$max.text(state.max);
-  $main.$menuLabels.$totalQuestions.text(state.totalQuestions);
 
   $main.$equationLabels.$m1.text(state.val0);
   $main.$equationLabels.$m2.text(state.val1);
