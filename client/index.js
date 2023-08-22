@@ -12,7 +12,6 @@ const state = {
   name: null,
   equations: [],
   time: Constants.ZERO_TIME,
-  scoreName: null,
 
   inProgress: false,
   currentQuestions: 0,
@@ -177,11 +176,16 @@ async function handleTabClick() {
   if($activePanel === $panel0) {
     $activePanel = $main;
   } else {
+    $panel0.empty();
+    $panel0.$leaderboard = buildLeaderboard();
+    $panel0.$leaderboard.empty();
+    $panel0.$leaderboard.append('<h1> ... </h1>');
+    $panel0.append($panel0.$leaderboard);
+    refreshDisplay();
+    
     const result = await getScores();
     $panel0.empty();
-    $panel0.append('<h1> ... </h1>');
-    $panel0.$leaderboard = await buildLeaderboard(state.scoreName, result.data);
-    $panel0.empty();
+    $panel0.$leaderboard = buildLeaderboard(result.data);
     $panel0.append($panel0.$leaderboard);
     $activePanel = $panel0;
   }
