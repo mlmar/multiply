@@ -8,7 +8,6 @@ app.use(cors({ origin: '*', credentials: true, optionsSuccessStatus: 200 }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
-const { PORT, DEV, MONGODB_SCORES_COLLECTION } = process.env;
 
 /*
 global function to return all data in object format
@@ -53,7 +52,7 @@ app.post('/insert', async function(req, res) {
       throw new Error();
     }
 
-    name = name.toUpperCase().substr(0,5) + '#' + randomId();
+    name = name.toUpperCase().substr(0,10) + '#' + randomId();
 
     const record = {
       name, 
@@ -107,7 +106,7 @@ function verifyEquations(equations) {
 }
 
 function randomId() {
-  const min = 1000;
-  const max = 4000;
+  const min = 100;
+  const max = 400;
   return Math.floor(Math.random() * (max - min) + max);
 }
