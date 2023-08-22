@@ -176,6 +176,7 @@ async function handleTabClick() {
   if($activePanel === $panel0) {
     $activePanel = $main;
   } else {
+    $activePanel = $panel0;
     $panel0.empty();
     $panel0.$leaderboard = buildLeaderboard();
     $panel0.$leaderboard.empty();
@@ -187,7 +188,6 @@ async function handleTabClick() {
     $panel0.empty();
     $panel0.$leaderboard = buildLeaderboard(result.data);
     $panel0.append($panel0.$leaderboard);
-    $activePanel = $panel0;
   }
   refreshDisplay();
 }

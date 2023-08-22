@@ -25,7 +25,7 @@ function buildEquationsTable(equations) {
   `)
 }
 
-export function buildLeaderboard(name, data) {
+export function buildLeaderboard(data) {
   const $container = $(`
     <section class="flex flex-col leaderboard">
       <h1> Leaderboard </h1>
@@ -34,9 +34,6 @@ export function buildLeaderboard(name, data) {
   if(data) {
     data.forEach(function(row, i) {
       const $row = buildScoreRow(row);
-      if(name === row) {
-        $row.addClass('status-success');
-      }
       $container['$row' + i] = $row;
       $container.append($row);
     });
