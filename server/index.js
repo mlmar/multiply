@@ -43,7 +43,7 @@ app.get('/scores', async function(req, res) {
 
 app.post('/insert', async function(req, res) {
   try {
-    let { name, time, equations } = req.body;
+    let { name, time, equations, mobile } = req.body;
 
     const hasName = name?.length > 0;
     const hasScore = parseFloat(time) > 1; // Should be almost impossible to be lower than 3
@@ -58,7 +58,8 @@ app.post('/insert', async function(req, res) {
     const record = {
       name, 
       time, 
-      equations
+      equations,
+      mobile
     }
     await insertScore(record);
 

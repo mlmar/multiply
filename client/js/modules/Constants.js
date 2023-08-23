@@ -18,6 +18,7 @@ export default {
   HOME_CODE: '&#8756;',
   SHARE_CODE: '&#10148;',
   INSERT_CODE: '&#x270E;',
+  PHONE_CODE: '&#x2706;',
   MGH_MULTIPLY: 'mgh_multiply',
   ZERO_TIME: '0.00'
 }
