@@ -1,11 +1,11 @@
 import Constants from './Constants.js';
 
 function buildScoreRow(data) {
-  let { name, time, equations, rank } = data;
+  let { name, time, equations, rank, mobile } = data;
   const $container = $(`
     <article class="flex-col leaderboard-row">
       <span class="flex flex-space-between">
-        <h1> ${rank}. ${name} </h1>
+        <h1> ${rank}. ${name} ${mobile ? Constants.PHONE_CODE : ''} </h1>
         <h1> ${time}s </h1>
       </span>
     </article>
