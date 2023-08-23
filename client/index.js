@@ -101,10 +101,6 @@ function buildTabPanel() {
   $footer.$revertBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.REVERSE_CODE} </button>`)
   $footer.$revertBtn.on('click', handleReverseClick);
 
-  // Home button
-  $footer.$homeBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.HOME_CODE} </button>`)
-  $footer.$homeBtn.on('click', handleHomeClick);
-  
   // Share button
   $footer.$shareBtn = $(`<button class="flex flex-middle flex-center bw-btn inverted-btn small-btn"> ${Constants.SHARE_CODE} </button>`)
   $footer.$shareBtn.on('click', handleShareClick);
@@ -115,7 +111,6 @@ function buildTabPanel() {
 
   $footer.$tabPanel.append($footer.$leaderboardBtn);
   $footer.$tabPanel.append($footer.$revertBtn);
-  $footer.$tabPanel.append($footer.$homeBtn);
   $footer.$tabPanel.append($footer.$shareBtn);
   $footer.$tabPanel.append($footer.$insertBtn);
 }
