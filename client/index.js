@@ -128,7 +128,7 @@ function handleKeypadClick(event) {
       if(t) touch.push(t);
     }
     touch = touch[touch.length - 1];
-    $target = $(touch.target)
+    $target = touch.target.tagName === 'SPAN' ? $(touch.target).parent() : $(touch.target);
   }
 
   let value = $target?.data('value');
