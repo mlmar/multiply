@@ -1,7 +1,7 @@
 import Timer, { buildTimerLabels } from './js/modules/Timer.js';
 import { buildEquationLabels, EquationGenerator } from './js/modules/Equation.js';
 import { buildKeypad } from './js/modules/Keypad.js';
-import { buildLeaderboard, buildLeaderboardInput } from './js/modules/Leaderboard.js';
+import { buildLeaderboard, buildLeaderboardInput } from './js/modules/LeaderBoard.js';
 import { shareText } from './js/modules/ShareUtil.js';
 import { getScores, insertScore } from './js/service/ScoresService.js';
 
@@ -79,8 +79,8 @@ function buildMainKeypad(reverse) {
   }
 
   $main.$keypad = buildKeypad(reverse);
-  $main.$keypad.$clear = $(`<button class="bw-btn inverted-btn keypad-btn" data-value="${Constants.CLEAR}"> ${Constants.CLEAR_CODE} </button>`);
-  $main.$keypad.$enter = $(`<button class="bw-btn inverted-btn keypad-btn" data-value="${Constants.ENTER}"> ${Constants.ENTER_CODE} </button>`);
+  $main.$keypad.$clear = $(`<button class="keypad-btn" data-value="${Constants.CLEAR}"> <span class="bw-btn inverted-btn"> ${Constants.CLEAR_CODE} </span> </button>`);
+  $main.$keypad.$enter = $(`<button class="keypad-btn" data-value="${Constants.ENTER}"> <span class="bw-btn inverted-btn"> ${Constants.ENTER_CODE} </span> </button>`);
   $main.$keypad.children().last().prepend($main.$keypad.$clear);
   $main.$keypad.children().last().append($main.$keypad.$enter);
   $main.$keypad.find('.keypad-btn').on('touchstart mouseup', handleKeypadClick);
@@ -120,7 +120,7 @@ function buildTabPanel() {
 // BEGIN HANDLERS
 
 function handleKeypadClick(event) {
-  let $target = $(event.target);
+  let $target = $(event.currentTarget);
 
   if(event.touches?.length) { // handle multiple touch events
     let touch = [];
@@ -359,7 +359,7 @@ function refreshDisplay() {
   ];
 
   if(isTimerStopped) { // Change text and UI colors if user fails or succeeds
-    $main.$keypad.$enter.html(Constants.BACK_CODE);
+    $main.$keypad.$enter.find('span').html(Constants.BACK_CODE);
     const isSuccess = state.currentQuestions >= Constants.TOTAL_QUESTIONS;
     $labels.forEach(l => l.toggleClass(Constants.STATUS_SUCCESS, isSuccess));
     $labels.forEach(l => l.toggleClass(Constants.STATUS_FAIL, !isSuccess));
@@ -367,7 +367,7 @@ function refreshDisplay() {
     $footer.$shareBtn.prop('disabled', !isSuccess);
     $footer.$insertBtn.prop('disabled', !isSuccess);
   } else {
-    $main.$keypad.$enter.html(Constants.ENTER_CODE);
+    $main.$keypad.$enter.find('span').html(Constants.ENTER_CODE);
     $labels.forEach(l => l.removeClass(Constants.STATUS_SUCCESS));
     $labels.forEach(l => l.removeClass(Constants.STATUS_FAIL));
   }

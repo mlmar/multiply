@@ -175,6 +175,7 @@ footer > a {
   cursor: pointer;
 }
 
+.keypad-btn:active:not(:disabled) span,
 .bw-btn:active:not(:disabled) {
   background: black;
   color: white;
@@ -185,6 +186,7 @@ footer > a {
   color: white;
 }
 
+.keypad-btn:active:not(:disabled) span.inverted,
 .bw-btn.inverted-btn:active:not(:disabled) {
   background: white;
   color: black;
@@ -203,6 +205,19 @@ footer > a {
 .keypad .keypad-btn {
   width: 4.5rem;
   height: 4.5rem;
+  outline: none;
+  background: none;
+  border: none;
+  padding: .15rem;
+}
+
+.keypad .keypad-btn span {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
 }
 
 .small-btn {

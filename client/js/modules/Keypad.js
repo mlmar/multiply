@@ -1,7 +1,7 @@
 function buildKeypadRow(...numbers) {
   return $(`
     <section class="flex">
-      ${numbers.map((n, i) => `<button class="bw-btn keypad-btn" data-value="${n}" data-index="${i}"> ${n} </button>`).join('\n')}
+      ${numbers.map((n, i) => `<button class="keypad-btn flex" data-value="${n}" data-index="${i}"> <span class="bw-btn"> ${n} </span> </button>`).join('\n')}
     </section>
   `);
 }
