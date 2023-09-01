@@ -1,7 +1,7 @@
 import Timer, { buildTimerLabels } from './js/modules/Timer.js';
 import { buildEquationLabels, EquationGenerator } from './js/modules/Equation.js';
 import { buildKeypad } from './js/modules/Keypad.js';
-import { buildLeaderboard, buildLeaderboardInput } from './js/modules/LeaderBoard.js';
+import { buildLeaderboard, buildLeaderboardInput } from './js/modules/Leaderboard.js';
 import { shareText } from './js/modules/ShareUtil.js';
 import { getScores, insertScore } from './js/service/ScoresService.js';
 
