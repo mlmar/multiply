@@ -1,11 +1,11 @@
-import Timer, { buildTimerLabels } from './js/modules/Timer.js';
-import { buildEquationLabels, EquationGenerator } from './js/modules/Equation.js';
-import { buildKeypad } from './js/modules/Keypad.js';
-import { buildLeaderboard, buildLeaderboardInput } from './js/modules/LeaderBoard.js';
-import { shareText } from './js/modules/ShareUtil.js';
-import { getScores, insertScore } from './js/service/ScoresService.js';
+import Timer, { buildTimerLabels } from './modules/Timer.js';
+import { buildEquationLabels, EquationGenerator } from './modules/Equation.js';
+import { buildKeypad } from './modules/Keypad.js';
+import { buildLeaderboard, buildLeaderboardInput } from './modules/LeaderBoard.js';
+import { shareText } from './modules/ShareUtil.js';
+import { getScores, insertScore } from './service/ScoresService.js';
 
-import Constants from './js/modules/Constants.js';
+import Constants from './modules/Constants.js';
 
 $(document).ready(init);
 const state = {
