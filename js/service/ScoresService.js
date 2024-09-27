@@ -1,7 +1,7 @@
 import { get, post } from './HTTPService.js';
 
 const ENDPOINTS = {
-  SCORES: 'mutliply/scores',
+  SCORES: 'multiply/scores',
   INSERT: 'multiply/insert'
 }
 
