@@ -1,8 +1,8 @@
 import { get, post } from './HTTPService.js';
 
 const ENDPOINTS = {
-  SCORES: 'scores',
-  INSERT: 'insert'
+  SCORES: 'mutliply/scores',
+  INSERT: 'multiply/insert'
 }
 
 export const getScores = async () => {
